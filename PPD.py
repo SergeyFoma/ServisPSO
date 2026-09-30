@@ -1,7 +1,7 @@
 import sys
 
-#sys.path.append("../Харампур/venv/Lib/site-packages") C:\Users\Admin\PSO\venv
-sys.path.append("../PSO/ServisPSO/venv/Lib/site-packages/openpyxl")
+sys.path.append("../PSO/ServisPSO/venv/Lib/site-packages/openpyxl") #C:\Users\Admin\PSO\venv
+#sys.path.append("../PSO/ServisPSO/venv/Lib/site-packages/openpyxl")
 import openpyxl
 
 from openpyxl import load_workbook
@@ -9,7 +9,7 @@ from openpyxl import load_workbook
 
 
 # path to file
-file_path = r'C:\Users\Admin\PSO\ServisPSO\План 09 Н.xlsx'
+file_path = r'C:\Users\Fomenko.SM\PSO\ServisPSO\План 09 Н.xlsx'
 # start_PPD='ППД'
 start_PPD=int()
 # end_PPD='ППН'
@@ -58,7 +58,7 @@ for i in data:
 # print('start_PPD: ', start_PPD)
 row_end=end_PPD-start_PPD
 print('row_end: ', row_end)
-
+print("START_PPD: ", start_PPD)
 # ------------------------------------------------------------------------------------------
 # Сервис
 rows_data = []
@@ -66,13 +66,13 @@ rows_data_tr=[]
 rows_data_dem=[]
 rows_data_mon=[]
 rows_data_pnr=[]
-
+#print("LEN ROWS_DATA: ", len(rows_data))
 for row in ws.iter_rows(min_row=start_PPD+1, max_row=end_PPD, values_only=True):
     # Сервис
     if row[7] == 1:
         rows_data.append(list([1, 'ЦППД-1',row[2],'насос', row[4], f'НА-{row[3]}', row[5], row[1]]))#row[1]
     # Запись данных в справку Сервис
-    spravka_PPD=r'C:\Users\Admin\PSO\ServisPSO\справка  ЦППД-1.xlsx'
+    spravka_PPD=r'C:\Users\Fomenko.SM\PSO\ServisPSO\справка  ЦППД-1.xlsx'
     cols = [1,2,3, 4, 5, 6, 7, 10]
     start_row=14
 
@@ -105,14 +105,76 @@ for row in ws.iter_rows(min_row=start_PPD+1, max_row=end_PPD, values_only=True):
 
     # ws.cell(row=start_row, column=col, value='Объединённая ячейка')
     # ws.merge_cells(start_row=start_row, start_column=col, end_row=end_row, end_column=col)
-# ---------------------------------------------------------------------------------------    
+# ---------------------------------------------------------------------------------------   
+    start_H=start_PPD+8+len(rows_data)# строка с которой начнётя объединение ячеек
+    #print('start_A: ',type(start_A), start_A)
+    end_H=start_H+3 # количество объединённых ячеек
+    #print('end_A: ', type(end_A), end_A)
+    col=1 # колонка в которой будет объединение ячеек(№ п/п)
+    ws.cell(row=start_H, column=col, value='№ п/п')
+    ws.merge_cells(start_row=start_H, start_column=col, end_row=end_H, end_column=col) 
+    col=2 # колонка в которой будет объединение ячеек(№ п/п)
+    ws.cell(row=start_H, column=col, value='ЦЕХ')
+    ws.merge_cells(start_row=start_H, start_column=col, end_row=end_H, end_column=col)
+    col=8 # колонка в которой будет объединение ячеек(№ п/п)
+    ws.cell(row=start_H, column=col, value='Дата выполнения работ')
+    ws.merge_cells(start_row=start_H, start_column=col, end_row=end_H, end_column=col)
+    #print("COL: ", col)
+    col=9 # колонка в которой будет объединение ячеек(№ п/п)
+    ws.cell(row=start_H, column=col, value='Подпись, ФИО механика (мастера)')
+    ws.merge_cells(start_row=start_H, start_column=col, end_row=end_H, end_column=col)
+    col=10
+    ws.cell(row=start_H, column=col, value='№ ЗАКАЗА САП ТОРО')
+    ws.merge_cells(start_row=start_H, start_column=col, end_row=end_H, end_column=col)
+
+
+    # Объединяем ячейки для заголовка
+    # ws.merge_cells('C20:G21')
+    start_row=start_H
+    end_row=start_row+1
+    start_col=3
+    end_col=7
+    ws.cell(row=start_row, column=start_col, value='Работы по текущему ремонту!!!')
+    ws.merge_cells(start_row=start_row, start_column=start_col, end_row=end_row, end_column=end_col)
+
+    start = end_row+1
+    end=start+1
+    col=3
+    ws.cell(row=start, column=col, value='Объект')
+    ws.merge_cells(start_row=start, start_column=col, end_row=end, end_column=col)
+
+    start = end_row+1
+    end=start+1
+    col=4
+    ws.cell(row=start, column=col, value='Оборудование')
+    ws.merge_cells(start_row=start, start_column=col, end_row=end, end_column=col)
+
+    start = end_row+1
+    end=start+1
+    col=5
+    ws.cell(row=start, column=col, value='Марка оборудования')
+    ws.merge_cells(start_row=start, start_column=col, end_row=end, end_column=col)
+
+    start = end_row+1
+    end=start+1
+    col=6
+    ws.cell(row=start, column=col, value='Рег. №')
+    ws.merge_cells(start_row=start, start_column=col, end_row=end, end_column=col)
+
+    start = end_row+1
+    end=start+1
+    print("END: ", end)
+    col=7
+    ws.cell(row=start, column=col, value='Зав №')
+    ws.merge_cells(start_row=start, start_column=col, end_row=end, end_column=col)
+
 # Запись ППД ТР
     if row[8] == 1:
         rows_data_tr.append(list([1, 'ЦППД-1',row[2],'насос', row[4], f'НА-{row[3]}', row[5], row[1]]))
 
-    spravka_PPD=r'C:\Users\Admin\PSO\ServisPSO\справка  ЦППД-1.xlsx'
+    spravka_PPD=r'C:\Users\Fomenko.SM\PSO\ServisPSO\справка  ЦППД-1.xlsx'
     cols = [1,2,3, 4, 5, 6, 7, 10]
-    start_row_tr=34
+    start_row_tr=end+1
     
     # ВАЖНО: без read_only=True, иначе запись невозможна
     for r_idx, row_data in enumerate(rows_data_tr, start=start_row_tr):
@@ -123,7 +185,7 @@ for row in ws.iter_rows(min_row=start_PPD+1, max_row=end_PPD, values_only=True):
     if row[9] == 1:
             rows_data_dem.append(list([1, 'ЦППД-1',row[2], f'НА-{row[3]}',row[5], row[4], row[1]]))
     
-    spravka_PPD=r'C:\Users\Admin\PSO\ServisPSO\справка  ЦППД-1.xlsx'
+    spravka_PPD=r'C:\Users\Fomenko.SM\PSO\ServisPSO\справка  ЦППД-1.xlsx'
     cols = [1,2,3, 4, 5, 7, 10]
     start_row_dem=49
     
@@ -136,7 +198,7 @@ for row in ws.iter_rows(min_row=start_PPD+1, max_row=end_PPD, values_only=True):
     if row[10] == 1:
             rows_data_mon.append(list([1, 'ЦППД-1',row[2],f'НА-{row[3]}',row[5], row[4], row[1]]))
     
-    spravka_PPD=r'C:\Users\Admin\PSO\ServisPSO\справка  ЦППД-1.xlsx'
+    spravka_PPD=r'C:\Users\Fomenko.SM\PSO\ServisPSO\справка  ЦППД-1.xlsx'
     cols = [1,2,3, 4, 6, 7, 10]
     start_row_mon=49+len(rows_data_mon)
     
@@ -147,66 +209,66 @@ for row in ws.iter_rows(min_row=start_PPD+1, max_row=end_PPD, values_only=True):
 
 # ------------------------------------Объединение ячеек. Формирование шапки таблицы-----------------------------------
 
-start_H=start_PPD+6+len(rows_data)# строка с которой начнётя объединение ячеек
-#print('start_A: ',type(start_A), start_A)
-end_H=start_H+3 # количество объединённых ячеек
-#print('end_A: ', type(end_A), end_A)
-col=1 # колонка в которой будет объединение ячеек(№ п/п)
-ws.cell(row=start_H, column=col, value='№ п/п')
-ws.merge_cells(start_row=start_H, start_column=col, end_row=end_H, end_column=col)
-col=2 # колонка в которой будет объединение ячеек(№ п/п)
-ws.cell(row=start_H, column=col, value='ЦЕХ')
-ws.merge_cells(start_row=start_H, start_column=col, end_row=end_H, end_column=col)
-col=8 # колонка в которой будет объединение ячеек(№ п/п)
-ws.cell(row=start_H, column=col, value='Дата выполнения работ')
-ws.merge_cells(start_row=start_H, start_column=col, end_row=end_H, end_column=col)
-#print("COL: ", col)
-col=9 # колонка в которой будет объединение ячеек(№ п/п)
-ws.cell(row=start_H, column=col, value='Подпись, ФИО механика (мастера)')
-ws.merge_cells(start_row=start_H, start_column=col, end_row=end_H, end_column=col)
-col=10
-ws.cell(row=start_H, column=col, value='№ ЗАКАЗА САП ТОРО')
-ws.merge_cells(start_row=start_H, start_column=col, end_row=end_H, end_column=col)
+# start_H=start_PPD+6+len(rows_data)# строка с которой начнётя объединение ячеек
+# #print('start_A: ',type(start_A), start_A)
+# end_H=start_H+3 # количество объединённых ячеек
+# #print('end_A: ', type(end_A), end_A)
+# col=1 # колонка в которой будет объединение ячеек(№ п/п)
+# ws.cell(row=start_H, column=col, value='№ п/п')
+# ws.merge_cells(start_row=start_H, start_column=col, end_row=end_H, end_column=col)
+# col=2 # колонка в которой будет объединение ячеек(№ п/п)
+# ws.cell(row=start_H, column=col, value='ЦЕХ')
+# ws.merge_cells(start_row=start_H, start_column=col, end_row=end_H, end_column=col)
+# col=8 # колонка в которой будет объединение ячеек(№ п/п)
+# ws.cell(row=start_H, column=col, value='Дата выполнения работ')
+# ws.merge_cells(start_row=start_H, start_column=col, end_row=end_H, end_column=col)
+# #print("COL: ", col)
+# col=9 # колонка в которой будет объединение ячеек(№ п/п)
+# ws.cell(row=start_H, column=col, value='Подпись, ФИО механика (мастера)')
+# ws.merge_cells(start_row=start_H, start_column=col, end_row=end_H, end_column=col)
+# col=10
+# ws.cell(row=start_H, column=col, value='№ ЗАКАЗА САП ТОРО')
+# ws.merge_cells(start_row=start_H, start_column=col, end_row=end_H, end_column=col)
 
 
-# Объединяем ячейки для заголовка
-# ws.merge_cells('C20:G21')
-start_row=start_H
-end_row=start_row+1
-start_col=3
-end_col=7
-ws.cell(row=start_row, column=start_col, value='Работы по текущему ремонту!!!')
-ws.merge_cells(start_row=start_row, start_column=start_col, end_row=end_row, end_column=end_col)
+# # Объединяем ячейки для заголовка
+# # ws.merge_cells('C20:G21')
+# start_row=start_H
+# end_row=start_row+1
+# start_col=3
+# end_col=7
+# ws.cell(row=start_row, column=start_col, value='Работы по текущему ремонту!!!')
+# ws.merge_cells(start_row=start_row, start_column=start_col, end_row=end_row, end_column=end_col)
 
-start = end_row+1
-end=start+1
-col=3
-ws.cell(row=start, column=col, value='Объект')
-ws.merge_cells(start_row=start, start_column=col, end_row=end, end_column=col)
+# start = end_row+1
+# end=start+1
+# col=3
+# ws.cell(row=start, column=col, value='Объект')
+# ws.merge_cells(start_row=start, start_column=col, end_row=end, end_column=col)
 
-start = end_row+1
-end=start+1
-col=4
-ws.cell(row=start, column=col, value='Оборудование')
-ws.merge_cells(start_row=start, start_column=col, end_row=end, end_column=col)
+# start = end_row+1
+# end=start+1
+# col=4
+# ws.cell(row=start, column=col, value='Оборудование')
+# ws.merge_cells(start_row=start, start_column=col, end_row=end, end_column=col)
 
-start = end_row+1
-end=start+1
-col=5
-ws.cell(row=start, column=col, value='Марка оборудования')
-ws.merge_cells(start_row=start, start_column=col, end_row=end, end_column=col)
+# start = end_row+1
+# end=start+1
+# col=5
+# ws.cell(row=start, column=col, value='Марка оборудования')
+# ws.merge_cells(start_row=start, start_column=col, end_row=end, end_column=col)
 
-start = end_row+1
-end=start+1
-col=6
-ws.cell(row=start, column=col, value='Рег. №')
-ws.merge_cells(start_row=start, start_column=col, end_row=end, end_column=col)
+# start = end_row+1
+# end=start+1
+# col=6
+# ws.cell(row=start, column=col, value='Рег. №')
+# ws.merge_cells(start_row=start, start_column=col, end_row=end, end_column=col)
 
-start = end_row+1
-end=start+1
-col=7
-ws.cell(row=start, column=col, value='Зав №')
-ws.merge_cells(start_row=start, start_column=col, end_row=end, end_column=col)
+# start = end_row+1
+# end=start+1
+# col=7
+# ws.cell(row=start, column=col, value='Зав №')
+# ws.merge_cells(start_row=start, start_column=col, end_row=end, end_column=col)
 
 
 

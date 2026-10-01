@@ -1,4 +1,5 @@
 import sys
+from openpyxl.styles import Font
 
 sys.path.append("../PSO/ServisPSO/venv/Lib/site-packages/openpyxl") #C:\Users\Admin\PSO\venv
 #sys.path.append("../PSO/ServisPSO/venv/Lib/site-packages/openpyxl")
@@ -271,7 +272,12 @@ start_row=start_PPD+8+len(rows_data)+len(rows_data_tr)+8+4
 end_row=start_row+1
 start_col=3
 end_col=7
-ws.cell(row=start_row, column=start_col, value='Работы по замене агрегатов')
+
+
+# Сначала работаем с верхней левой ячейкой объединённого диапазона
+top_left = ws.cell(row=start_row, column=start_col)
+top_left.value = 'Работы по замене агрегатов'
+top_left.font = Font(bold=True, size=12, color='0000FF')
 ws.merge_cells(start_row=start_row, start_column=start_col, end_row=end_row, end_column=end_col)
 
 start = end_row+1

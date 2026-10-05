@@ -39,22 +39,14 @@ data = []
 for row in ws.iter_rows(values_only=True):
     data.append(list(row))
 # Найти строку с ППД и индекс строки
-print(data[8])
 for i in data:
-    for ii in i:
-        if ii == 'ППД':
-            start_PPD=data.index(i)+1
-            #end_PPD = data.index(i)
-        # найти индекс ППН     
+    for ii in i:  
         if ii == 'ППН':
-            end_PPD = data.index(i)
             start_PPN= data.index(i)
             end_PPN=data.index(data[len(data)-1])
 
-# print('start_PPD: ', start_PPD)
-row_end=end_PPD-start_PPD
-# print('row_end: ', row_end)
-# print("START_PPD: ", start_PPD)
+row_end=end_PPN-start_PPN
+
 # ------------------------------------------------------------------------------------------
 # Сервис
 
@@ -65,10 +57,10 @@ rows_data_mon=[]
 rows_data_pnr=[]
 
 # --- ЭТАП 1: сбор данных ---
-for row in ws.iter_rows(min_row=start_PPD + 1, max_row=end_PPD, values_only=True):
+for row in ws.iter_rows(min_row=start_PPN + 1, max_row=end_PPN, values_only=True):
     if row[7] == 1:
         rows_data.append([1, 'ЦППД-1', row[2], 'насос', row[4], f'НА-{row[3]} СО', row[5], row[1]])
-        print(row)
+        # print(row)
     if row[8] == 1:
         rows_data_tr.append([1, 'ЦППД-1', row[2], 'насос', row[4], f'НА-{row[3]} ТР', row[5], row[1]])
     if row[9] == 1:
@@ -82,10 +74,14 @@ wb = Workbook()
 # 2. Получаем активный лист (по умолчанию он уже есть)
 ws = wb.active
 ws.title = "Справка"  # можно переименовать лист
+# Сохраняем файл с нужным названием
+wb.save(r"C:\Users\Admin\PSO\ServisPSO\ППН_Н.xlsx")
+
+# -----------------------------------------------------------------------
 
 # # 3. Пишем данные
-spravka_PPD = r'C:\Users\Admin\PSO\ServisPSO\ППД_Н.xlsx'
-wb = load_workbook(filename=spravka_PPD)
+spravka_PPN = r'C:\Users\Admin\PSO\ServisPSO\ППН_Н.xlsx'
+wb = load_workbook(filename=spravka_PPN)
 ws = wb.active
 # Шапка файла
 col=6 # колонка в которой будет объединение ячеек(№ п/п)
@@ -145,35 +141,37 @@ ws.merge_cells(start_row=6, start_column=4, end_row=6, end_column=9)
 
 #-----------------------------------------------------------
     # Servis
-start_H=9# строка с которой начнётя объединение ячеек
+start_SO=9# строка с которой начнётя объединение ячеек
 #start_H=22
 #print('start_A: ',type(start_A), start_A)
-end_H=start_H+3 # количество объединённых ячеек
+end_SO=start_SO+3 # количество объединённых ячеек
 #print('end_A: ', type(end_A), end_A)
 col=1 # колонка в которой будет объединение ячеек(№ п/п)
-ws.cell(row=start_H, column=col, value='№ п/п')
-ws.merge_cells(start_row=start_H, start_column=col, end_row=end_H, end_column=col)
+ws.cell(row=start_SO, column=col, value='№ п/п')
+ws.merge_cells(start_row=start_SO, start_column=col, end_row=end_SO, end_column=col)
 
-col=2 # колонка в которой будет объединение ячеек(№ п/п)
-ws.cell(row=start_H, column=col, value='ЦЕХ')
-ws.merge_cells(start_row=start_H, start_column=col, end_row=end_H, end_column=col)
+col=2 
+ws.cell(row=start_SO, column=col, value='ЦЕХ')
+ws.merge_cells(start_row=start_SO, start_column=col, end_row=end_SO, end_column=col)
 
-col=8 # колонка в которой будет объединение ячеек(№ п/п)
-ws.cell(row=start_H, column=col, value='Дата выполнения работ')
-ws.merge_cells(start_row=start_H, start_column=col, end_row=end_H, end_column=col)
+col=8 # колонка в которой будет объединение ячеек(Дата выполнения работ)
+ws.cell(row=start_SO, column=col, value='Дата выполнения работ')
+ws.merge_cells(start_row=start_SO, start_column=col, end_row=end_SO, end_column=col)
 
 #print("COL: ", col)
 col=9 # колонка в которой будет объединение ячеек(№ п/п)
-ws.cell(row=start_H, column=col, value='Подпись, ФИО механика (мастера)')
-ws.merge_cells(start_row=start_H, start_column=col, end_row=end_H, end_column=col)
+ws.cell(row=start_SO, column=col, value='Подпись, ФИО механика (мастера)')
+ws.merge_cells(start_row=start_SO, start_column=col, end_row=end_SO, end_column=col)
 col=10
-ws.cell(row=start_H, column=col, value='№ ЗАКАЗА САП ТОРО')
-ws.merge_cells(start_row=start_H, start_column=col, end_row=end_H, end_column=col)
+ws.cell(row=start_SO, column=col, value='№ ЗАКАЗА САП ТОРО')
+ws.merge_cells(start_row=start_SO, start_column=col, end_row=end_SO, end_column=col)
 
-wb.save(spravka_PPD)
-# Объединяем ячейки для заголовка
-# ws.merge_cells('C20:G21')
-start_row=start_H
+wb.save(spravka_PPN)
+print("Start_SO: ", start_SO)
+print("END_SO: ", end_SO)
+# # Объединяем ячейки для заголовка
+# # ws.merge_cells('C20:G21')
+start_row=start_SO
 end_row=start_row+1
 start_col=3
 end_col=7
@@ -196,38 +194,38 @@ col=3
 ws.cell(row=start, column=col, value='Объект')
 ws.merge_cells(start_row=start, start_column=col, end_row=end, end_column=col)
 
-start = end_row+1
-end=start+1
+# start = end_row+1
+# end=start+1
 col=4
 ws.cell(row=start, column=col, value='Оборудование')
 ws.merge_cells(start_row=start, start_column=col, end_row=end, end_column=col)
 
-start = end_row+1
-end=start+1
+# start = end_row+1
+# end=start+1
 col=5
 ws.cell(row=start, column=col, value='Марка оборудования')
 ws.merge_cells(start_row=start, start_column=col, end_row=end, end_column=col)
 
-start = end_row+1
-end=start+1
+# start = end_row+1
+# end=start+1
 col=6
 ws.cell(row=start, column=col, value='Рег. №')
 ws.merge_cells(start_row=start, start_column=col, end_row=end, end_column=col)
 
-start = end_row+1
-end=start+1
+# start = end_row+1
+# end=start+1
 col=7
 ws.cell(row=start, column=col, value='Зав №')
 ws.merge_cells(start_row=start, start_column=col, end_row=end, end_column=col)
-wb.save(spravka_PPD)
+wb.save(spravka_PPN)
 
 
 cols = [1, 2, 3, 4, 5, 6, 7, 10]
 
 
-start_PPD_tr=start_PPD+len(rows_data)+len(rows_data_tr)+8+3
+# start_PPN_tr=start_PPN+len(rows_data)+len(rows_data_tr)+8+3
 # Запись Сервис (начиная со строки 14)
-for r_idx, row_data in enumerate(rows_data, start=14): # start_PPD+len(rows_data)):
+for r_idx, row_data in enumerate(rows_data, start=end_SO+2): # start_PPD+len(rows_data)):
     for col_num, value in zip(cols, row_data):
         ws.cell(row=r_idx, column=col_num).value = value
 
@@ -249,20 +247,21 @@ for row_num in range(start_row, ws.max_row + 1):
 for idx, row_num in enumerate(filled_rows, start=1):
     ws.cell(row=row_num, column=1).value = idx
 
-print(f"Заполненных строк: {len(filled_rows)}")
-# ------------------------------------------------------------------------
+# print(f"Заполненных строк: {len(filled_rows)}")
+# # ------------------------------------------------------------------------
 
+start_PPN_tr=end_SO+len(rows_data)
 # Запись ППД ТР (начиная со строки 26)
-for r_idx, row_data in enumerate(rows_data_tr, start=start_PPD_tr-2):
+for r_idx, row_data in enumerate(rows_data_tr, start=start_PPN_tr-2):
     for col_num, value in zip(cols, row_data):
         ws.cell(row=r_idx, column=col_num).value = value
-
+print("Start_PPN_tr: ", start_PPN_tr)
 # Заполняем столбец №п/п
 # Настраиваем ключевой столбец, по которому считаем строку заполненной
 # Например, столбец B (индекс 1)
 key_col_idx = 1
 
-start_row = start_PPD_tr-2  # пропускаем заголовок (строка 1)
+start_row = start_PPN_tr-2  # пропускаем заголовок (строка 1)
 filled_rows = []
 
 # Проходим по строкам и ищем непустые ячейки в ключевом столбце
@@ -275,12 +274,14 @@ for row_num in range(start_row, ws.max_row + 1):
 for idx, row_num in enumerate(filled_rows, start=1):
     ws.cell(row=row_num, column=1).value = idx
 
-print(f"Заполненных строк: {len(filled_rows)}")
-# ------------------------------------------------------------------------
+# print(f"Заполненных строк: {len(filled_rows)}")
+# # ------------------------------------------------------------------------
 
 cols = [1, 2, 3, 4, 5, 6, 7, 10]
 # Запись ППД демонтаж (начиная со строки 46)
-for r_idx, row_data in enumerate(rows_data_dem, start=46):
+start_PPN_dem=start_PPN_tr+10
+print("Start_PPN_dem: ", start_PPN_dem)
+for r_idx, row_data in enumerate(rows_data_dem, start=start_PPN_dem):
     for col_num, value in zip(cols, row_data):
         ws.cell(row=r_idx, column=col_num).value = value
 
@@ -289,7 +290,7 @@ for r_idx, row_data in enumerate(rows_data_dem, start=46):
 # Например, столбец B (индекс 1)
 key_col_idx = 1
 
-start_row = 46  # пропускаем заголовок (строка 1)
+start_row = 90  # пропускаем заголовок (строка 1)
 filled_rows = []
 
 # Проходим по строкам и ищем непустые ячейки в ключевом столбце
@@ -302,21 +303,21 @@ for row_num in range(start_row, ws.max_row + 1):
 for idx, row_num in enumerate(filled_rows, start=1):
     ws.cell(row=row_num, column=1).value = idx
 
-print(f"Заполненных строк: {len(filled_rows)}")
-# ------------------------------------------------------------------------
+# print(f"Заполненных строк: {len(filled_rows)}")
+# # ------------------------------------------------------------------------
 
-print("Start_PPD: ", start_PPD+len(rows_data))
-print("Start_PPD_tr: ",start_PPD_tr)
+# print("Start_PPD: ", start_PPD+len(rows_data))
+# print("Start_PPD_tr: ",start_PPD_tr)
 
-# --- СОХРАНЯЕМ ---
-wb.save(spravka_PPD)
+# # --- СОХРАНЯЕМ ---
+wb.save(spravka_PPN)
 
 
-# ------------------------------------Объединение ячеек. Формирование шапки таблицы TR-----------------------------------
+# # ------------------------------------Объединение ячеек. Формирование шапки таблицы TR-----------------------------------
 #spravka_PPD = r'C:\Users\Fomenko.SM\PSO\ServisPSO\ППД_Н.xlsx'
-wb = load_workbook(spravka_PPD)
+wb = load_workbook(spravka_PPN)
 ws = wb.active
-start_H=start_PPD+6+len(rows_data)+3# строка с которой начнётя объединение ячеек
+start_H=start_PPN+6+len(rows_data)+3# строка с которой начнётя объединение ячеек
 #start_H=22
 #print('start_A: ',type(start_A), start_A)
 end_H=start_H+3 # количество объединённых ячеек
@@ -341,7 +342,7 @@ col=10
 ws.cell(row=start_H, column=col, value='№ ЗАКАЗА САП ТОРО')
 ws.merge_cells(start_row=start_H, start_column=col, end_row=end_H, end_column=col)
 
-wb.save(spravka_PPD)
+wb.save(spravka_PPN)
 # Объединяем ячейки для заголовка
 # ws.merge_cells('C20:G21')
 start_row=start_H
@@ -390,10 +391,10 @@ end=start+1
 col=7
 ws.cell(row=start, column=col, value='Зав №')
 ws.merge_cells(start_row=start, start_column=col, end_row=end, end_column=col)
-wb.save(spravka_PPD)
-# # -------------------------------------------------------------------------------
+wb.save(spravka_PPN)
+# # # -------------------------------------------------------------------------------
 # таблица для демонтаж, монтаж, пнр
-start_H=start_PPD+8+len(rows_data)+len(rows_data_tr)+8+4+2# строка с которой начнётя объединение ячеек
+start_H=start_PPN+8+len(rows_data)+len(rows_data_tr)+8# строка с которой начнётя объединение ячеек
 print('start_H: ',type(start_H), start_H)
 
 end_H=start_H+3 # количество объединённых ячеек
@@ -418,7 +419,7 @@ ws.merge_cells(start_row=start_H, start_column=col, end_row=end_H, end_column=co
 
 # Объединяем ячейки для заголовка
 # ws.merge_cells('C20:G21')
-start_row=start_PPD+8+len(rows_data)+len(rows_data_tr)+8+6
+start_row=14+len(rows_data)+len(rows_data_tr)+10+17
 end_row=start_row+1
 start_col=3
 end_col=7
@@ -471,10 +472,10 @@ ws.merge_cells(start_row=start, start_column=col, end_row=end, end_column=col)
 # #ws['C20'].alignment = Alignment(horizontal='center', vertical='center')
 
 
-wb.save(spravka_PPD)
-# # Явное закрытие
-# wb.close()
-print("Данные записаны.")
-#print('rows_data_tr: ', rows_data_tr)
-#print('len(rows_data): ',len(rows_data))
+wb.save(spravka_PPN)
+# # # Явное закрытие
+# # wb.close()
+# print("Данные записаны.")
+# #print('rows_data_tr: ', rows_data_tr)
+# #print('len(rows_data): ',len(rows_data))
 

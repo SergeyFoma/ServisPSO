@@ -9,6 +9,8 @@ from openpyxl import load_workbook
 #import pandas as pd
 from openpyxl import Workbook
 
+from openpyxl.styles import Border, Side # для таблицы
+
 
 # path to file
 file_path = r'C:\Users\Fomenko.SM\PSO\ServisPSO\План 10 Н.xlsx'
@@ -66,6 +68,7 @@ rows_data_pnr=[]
 for row in ws.iter_rows(min_row=start_PPD + 1, max_row=end_PPD, values_only=True):
     if row[7] == 1:
         rows_data.append([1, 'ЦППД-1', row[2], 'насос', row[4], f'НА-{row[3]} СО', row[5], row[1]])
+        print(row)
     if row[8] == 1:
         rows_data_tr.append([1, 'ЦППД-1', row[2], 'насос', row[4], f'НА-{row[3]} ТР', row[5], row[1]])
     if row[9] == 1:
@@ -102,15 +105,35 @@ col=6 # колонка в которой будет объединение яч�
 ws.cell(row=3, column=col, value='(Наименование организации)')
 ws.merge_cells(start_row=3, start_column=col, end_row=3, end_column=col)
 
-col=6 
-ws.cell(row=4, column=col, value='СПРАВКА №04')
+# col=6 
+# ws.cell(row=4, column=col, value='СПРАВКА №04')
+# ws.merge_cells(start_row=4, start_column=col, end_row=4, end_column=col)
+
+top_left = ws.cell(row=4, column=6)
+top_left.value = 'СПРАВКА №04'
+top_left.font = Font(bold=True, size=12)
+top_left.alignment = Alignment(
+    horizontal='center',      # по горизонтали
+    vertical='center',        # по вертикали
+    wrap_text=True            # перенос текста
+)
 ws.merge_cells(start_row=4, start_column=col, end_row=4, end_column=col)
 
 ws.cell(row=5, column=5, value=' о выполнении сервисных работ за')
 ws.merge_cells(start_row=5, start_column=5, end_row=5, end_column=6)
 
-col=7 
-ws.cell(row=5, column=col, value='сентябрь')
+# col=7 
+# ws.cell(row=5, column=col, value='сентябрь')
+# ws.merge_cells(start_row=5, start_column=col, end_row=5, end_column=col)
+
+top_left = ws.cell(row=5, column=7)
+top_left.value = 'октябрь'
+top_left.font = Font(bold=True, size=12)
+top_left.alignment = Alignment(
+    horizontal='center',      # по горизонтали
+    vertical='center',        # по вертикали
+    wrap_text=True            # перенос текста
+)
 ws.merge_cells(start_row=5, start_column=col, end_row=5, end_column=col)
 
 col=8 
@@ -208,16 +231,79 @@ for r_idx, row_data in enumerate(rows_data, start=14): # start_PPD+len(rows_data
     for col_num, value in zip(cols, row_data):
         ws.cell(row=r_idx, column=col_num).value = value
 
+# Заполняем столбец №п/п
+# Настраиваем ключевой столбец, по которому считаем строку заполненной
+# Например, столбец B (индекс 1)
+key_col_idx = 1
+
+start_row = 14  # пропускаем заголовок (строка 1)
+filled_rows = []
+
+# Проходим по строкам и ищем непустые ячейки в ключевом столбце
+for row_num in range(start_row, ws.max_row + 1):
+    cell = ws.cell(row=row_num, column=key_col_idx + 1)  # column=2 → B
+    if cell.value is not None and str(cell.value).strip() != "":
+        filled_rows.append(row_num)
+
+# Теперь заполняем столбец A номерами по порядку
+for idx, row_num in enumerate(filled_rows, start=1):
+    ws.cell(row=row_num, column=1).value = idx
+
+print(f"Заполненных строк: {len(filled_rows)}")
+# ------------------------------------------------------------------------
+
 # Запись ППД ТР (начиная со строки 26)
 for r_idx, row_data in enumerate(rows_data_tr, start=start_PPD_tr-2):
     for col_num, value in zip(cols, row_data):
         ws.cell(row=r_idx, column=col_num).value = value
+
+# Заполняем столбец №п/п
+# Настраиваем ключевой столбец, по которому считаем строку заполненной
+# Например, столбец B (индекс 1)
+key_col_idx = 1
+
+start_row = start_PPD_tr-2  # пропускаем заголовок (строка 1)
+filled_rows = []
+
+# Проходим по строкам и ищем непустые ячейки в ключевом столбце
+for row_num in range(start_row, ws.max_row + 1):
+    cell = ws.cell(row=row_num, column=key_col_idx + 1)  # column=2 → B
+    if cell.value is not None and str(cell.value).strip() != "":
+        filled_rows.append(row_num)
+
+# Теперь заполняем столбец A номерами по порядку
+for idx, row_num in enumerate(filled_rows, start=1):
+    ws.cell(row=row_num, column=1).value = idx
+
+print(f"Заполненных строк: {len(filled_rows)}")
+# ------------------------------------------------------------------------
 
 cols = [1, 2, 3, 4, 5, 6, 7, 10]
 # Запись ППД демонтаж (начиная со строки 46)
 for r_idx, row_data in enumerate(rows_data_dem, start=46):
     for col_num, value in zip(cols, row_data):
         ws.cell(row=r_idx, column=col_num).value = value
+
+# Заполняем столбец №п/п
+# Настраиваем ключевой столбец, по которому считаем строку заполненной
+# Например, столбец B (индекс 1)
+key_col_idx = 1
+
+start_row = 46  # пропускаем заголовок (строка 1)
+filled_rows = []
+
+# Проходим по строкам и ищем непустые ячейки в ключевом столбце
+for row_num in range(start_row, ws.max_row + 1):
+    cell = ws.cell(row=row_num, column=key_col_idx + 1)  # column=2 → B
+    if cell.value is not None and str(cell.value).strip() != "":
+        filled_rows.append(row_num)
+
+# Теперь заполняем столбец A номерами по порядку
+for idx, row_num in enumerate(filled_rows, start=1):
+    ws.cell(row=row_num, column=1).value = idx
+
+print(f"Заполненных строк: {len(filled_rows)}")
+# ------------------------------------------------------------------------
 
 print("Start_PPD: ", start_PPD+len(rows_data))
 print("Start_PPD_tr: ",start_PPD_tr)

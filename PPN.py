@@ -15,11 +15,11 @@ from openpyxl.styles import Border, Side # для таблицы
 # path to file
 file_path = r'C:\Users\Admin\PSO\ServisPSO\План 10 Н.xlsx'
 # start_PPD='ППД'
-start_PPD=21
+#start_PPD=21 
 # end_PPD='ППН'
-end_PPD=int()
-start_PPN=int()
-end_PPN=int()
+#end_PPD=int()
+start_PPN=int() # начало ППН в файле План 10
+end_PPN=int() # конец ППН в файле План 10
 sheet_name = None  # None = активный лист; можно указать имя, например "Лист1"
 cols=[1,3,6,7]
 
@@ -45,12 +45,13 @@ for i in data:
             start_PPN= data.index(i)
             end_PPN=data.index(data[len(data)-1])
 
-row_end=end_PPN-start_PPN
-
+# row_end=end_PPN-start_PPN
+print("Start_PPN: ", start_PPN)
+print("End_PPN: ", end_PPN)
 # ------------------------------------------------------------------------------------------
 # Сервис
 
-rows_data = []
+rows_data = [] 
 rows_data_tr=[]
 rows_data_dem=[]
 rows_data_mon=[]
@@ -66,6 +67,7 @@ for row in ws.iter_rows(min_row=start_PPN + 1, max_row=end_PPN, values_only=True
     if row[9] == 1:
         rows_data_dem.append(list([1, 'ЦППД-1',row[2], f'НА-{row[3]}', row[5],'', row[4], row[1]]))
 
+print("len(rows_data): " ,len(rows_data))
 # --- ЭТАП 2: запись в файл ---
 
 # 1. Создаём новую книгу

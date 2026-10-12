@@ -11,12 +11,13 @@ from openpyxl import Workbook
 from openpyxl.styles import Border, Side, Alignment, Font # для таблицы
 
 # path to file
-file_path = r'C:\Users\Admin\PSO\ServisPSO\План 09 Н.xlsx'
+file_path = r'C:\Users\Fomenko.SM\PSO\ServisPSO\Noyabrsk\План 10 Н.xlsx'
 
-start_PPN=int() # начало ППН в файле План 10
-end_PPN=int() # конец ППН в файле План 10
-sheet_name = None  # None = активный лист; можно указать имя, например "Лист1"
-cols=[1,3,6,7]
+# start_PPD=int()
+# start_PPN=int() # начало ППН в файле План 10
+# end_PPN=int() # конец ППН в файле План 10
+# sheet_name = None  # None = активный лист; можно указать имя, например "Лист1"
+# cols=[1,3,6,7]
 
 # Читаем все листы документа
 # 1 - Узнать названия всех листов в документе
@@ -24,25 +25,81 @@ wb = load_workbook(file_path, data_only=True)  # data_only=True — брать �
 print("Листы:", wb.sheetnames)
 
 # 2 - Выбрать нужный лист
-# Четвёртый лист по порядку (индексация с 0, значит индекс 3) Ноябрьск ТОРО
+# Пятый лист по порядку (индексация с 0, значит индекс 4) НВынгапур ТОРО
 ws = wb.worksheets[3]
 print("Имя листа:", ws.title)
 
 # 3 - Прочитать весь лист
-# Прочитать всё как список списков
-data = []
-for row in ws.iter_rows(values_only=True):
-    data.append(list(row))
-# Найти строку с ППН и индекс строки
-for i in data:
-    for ii in i:  
-        if ii == 'ППН':
-            start_PPN= data.index(i)
-            end_PPN=data.index(data[len(data)-1])
+PPD = []
+PPN = []
 
-# row_end=end_PPN-start_PPN
-# print("Start_PPN: ", start_PPN)
-# print("End_PPN: ", end_PPN)
+start_PPD = None
+end_PPD = None
+start_PPN = None
+end_PPN = None
+
+# Предположим, что метки (ППД, ППН) в столбце A (col=1), а оборудование в столбце B (col=2)
+col_label = 2
+col_eq = 3
+
+rows = list(ws.iter_rows(min_col=col_label, max_col=max(col_label, col_eq), values_only=True))
+
+for i, row in enumerate(rows):
+    label = row[0] if len(row) > 0 else None
+    eq = row[1] if len(row) > 1 else None
+
+    # Нормализуем: убираем пробелы, приводим к верхнему регистру для сравнения
+    if isinstance(label, str):
+        label_norm = label.strip().upper()
+    else:
+        label_norm = None
+
+    if label_norm == 'ППД':
+        if start_PPD is None:
+            start_PPD = i + 1  # номер строки (1-based)
+        # Если уже был ППД и теперь снова ППД — можно либо перезаписать, либо обработать ошибку.
+        # Здесь просто перезаписываем начало.
+
+    elif label_norm == 'ППН':
+        # Конец ППД — строка перед ППН
+        if start_PPD is not None and end_PPD is None:
+            end_PPD = i  # строка с ППН — это уже не часть ППД
+        # Начало ППН — строка с меткой
+        if start_PPN is None:
+            start_PPN = i + 1
+
+    # Собираем оборудование, если мы внутри нужного диапазона
+    # Для ППД: от start_PPD до end_PPD (не включая строку с меткой ППН)
+    if start_PPD is not None and eq is not None:
+        row_num = i + 1
+        if end_PPD is None:
+            # Пока не встретили ППН, считаем всё после ППД частью ППД
+            if row_num > start_PPD:
+                PPD.append(eq)
+        else:
+            # После появления ППН: ППД только до end_PPD
+            if start_PPD < row_num <= end_PPD:
+                PPD.append(eq)
+
+    # Для ППН: от start_PPN до конца (или до следующей метки, если будет)
+    if start_PPN is not None and eq is not None:
+        row_num = i + 1
+        # Пока нет конца ППН, собираем всё после метки
+        if row_num > start_PPN:
+            PPN.append(eq)
+
+# Если ППН не было, но был ППД, то конец ППД — последняя строка
+if start_PPD is not None and end_PPD is None:
+    end_PPD = len(rows)
+
+# Если был ППН, то конец ППН — последняя строка (можно уточнить логику, если есть ещё метки)
+if start_PPN is not None and end_PPN is None:
+    end_PPN = len(rows)
+
+print('PPD:', PPD)
+print('PPN:', PPN)
+print('start_PPD:', start_PPD, 'end_PPD:', end_PPD)
+print('start_PPN:', start_PPN, 'end_PPN:', end_PPN)
 
 # ------------------------------------------------------------------------------------------
 # Сервис
@@ -53,22 +110,24 @@ rows_data_dem=[]
 rows_data_mon=[]
 rows_data_pnr=[]
 
+CPPN='ЦППН-1'
+
 # --- ЭТАП 1: сбор данных ---
 for row in ws.iter_rows(min_row=start_PPN + 1, max_row=end_PPN, values_only=True):
     if row[7] == 1:
-        rows_data.append([1, 'ЦППН-1', row[2], 'насос', row[4], f'НА-{row[3]} СО', row[5], row[1]])
+        rows_data.append([1, CPPN, row[2], 'насос', row[4], f'НА-{row[3]} СО', row[5], row[1]])
         # print(row)
     if row[8] == 1:
-        rows_data_tr.append([1, 'ЦППН-1', row[2], 'насос', row[4], f'НА-{row[3]} ТР', row[5], row[1]])
+        rows_data_tr.append([1, CPPN, row[2], 'насос', row[4], f'НА-{row[3]} ТР', row[5], row[1]])
     if row[9] == 1:
-        rows_data_dem.append(list([1, 'ЦППН-1',row[2], f'НА-{row[3]}', row[5],'', row[4], row[1]]))
+        rows_data_dem.append(list([1, CPPN,row[2], f'НА-{row[3]}', row[5],'', row[4], row[1]]))
     if row[10] == 1 and row[11] == 1:
-        rows_data_dem.append(list([1, 'ЦППН-1',row[2], f'НА-{row[3]}', '',row[6], row[4], row[1]]))
+        rows_data_dem.append(list([1, CPPN,row[2], f'НА-{row[3]}', '',row[5], row[4], row[1]]))
     if row[11] == 1 and row[10] != 1:
-        rows_data_dem.append(list([1, 'ЦППН-1',row[2], f'НА-{row[3]}', '',f"(ПНР){row[6]}", row[4], row[1]]))
+        rows_data_dem.append(list([1, CPPN,row[2], f'НА-{row[3]}', '',f"(ПНР){row[5]}", row[4], row[1]]))
 
-#print("len(rows_data): " ,len(rows_data))
-
+print("len(rows_data): " ,len(rows_data))
+print("ROWS_DATA: ", rows_data)
 
 # --- ЭТАП 2: запись в файл ---
 
@@ -77,14 +136,15 @@ wb = Workbook()
 
 # 2. Получаем активный лист (по умолчанию он уже есть)
 ws = wb.active
-ws.title = "Справка"  # можно переименовать лист
+ws.title = "Справка ППН Ноябрьск"  # можно переименовать лист
 # Сохраняем файл с нужным названием
-wb.save(r"C:\Users\Admin\PSO\ServisPSO\Noyabrsk\Справка_ППН_Ноябрьск.xlsx")
+wb.save(r"C:\Users\Fomenko.SM\PSO\ServisPSO\Noyabrsk\Справка_ППН_Ноябрьск.xlsx")
+
 
 # -----------------------------------------------------------------------
 
 # # 3. Пишем данные
-spravka_PPN = r'C:\Users\Admin\PSO\ServisPSO\Noyabrsk\Справка_ППН_Ноябрьск.xlsx'
+spravka_PPN = r'C:\Users\Fomenko.SM\PSO\ServisPSO\Noyabrsk\Справка_ППН_Ноябрьск.xlsx'
 wb = load_workbook(filename=spravka_PPN)
 ws = wb.active
 
@@ -418,4 +478,3 @@ for idx, row_num in enumerate(filled_rows, start=1):
 
 
 wb.save(spravka_PPN)
-

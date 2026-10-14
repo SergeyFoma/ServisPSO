@@ -1,0 +1,1 @@
+rows = list(ws.iter_rows(min_col=col_label, max_col=max(col_label, col_eq), values_only=True))

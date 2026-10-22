@@ -69,7 +69,7 @@ print('num_tr: ',num_tr)
 for row in ws.iter_rows(min_row=num, max_row=num_tr, values_only=True):
     # row — это кортеж значений текущей строки
     #print(row)  # или обрабатывайте данные как нужно
-    value = row[4]
+    value = [row[4],row[5]]
     if value is not None:          # пропускаем пустые ячейки
             print(value)
     #print(value)

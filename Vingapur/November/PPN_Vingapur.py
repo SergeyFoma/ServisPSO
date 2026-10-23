@@ -11,7 +11,7 @@ from openpyxl import Workbook
 from openpyxl.styles import Border, Side, Alignment, Font # для таблицы
 
 # path to file
-file_path = r'C:\Users\Fomenko.SM\PSO\ServisPSO\Vingapur\План 10 Н.xlsx'
+file_path = r'C:\Users\Fomenko.SM\PSO\ServisPSO\Vingapur\November\План работ ООО ЯСЦ_ноя для загрузки.xlsx'
 
 # start_PPD=int()
 # start_PPN=int() # начало ППН в файле План 10
@@ -136,13 +136,13 @@ wb = Workbook()
 ws = wb.active
 ws.title = "Справка ППН Вынгапур"  # можно переименовать лист
 # Сохраняем файл с нужным названием
-wb.save(r"C:\Users\Fomenko.SM\PSO\ServisPSO\Vingapur\Справка_ППН_Vingapur.xlsx")
+wb.save(r"D:\Рабочий стол\2026\Сервис\Вынгапур-сервис\Ноябрь\Справка_ППН_Vingapur.xlsx")
 
 
 # -----------------------------------------------------------------------
 
 # # 3. Пишем данные
-spravka_PPN = r'C:\Users\Fomenko.SM\PSO\ServisPSO\Vingapur\Справка_ППН_Vingapur.xlsx'
+spravka_PPN = r'D:\Рабочий стол\2026\Сервис\Вынгапур-сервис\Ноябрь\Справка_ППН_Vingapur.xlsx'
 wb = load_workbook(filename=spravka_PPN)
 ws = wb.active
 
